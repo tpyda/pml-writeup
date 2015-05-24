@@ -1,10 +1,10 @@
-Quantative predictions
+Activity quality  predictions
 =============================
 
 Load necessary libraries
 ```{r}
-library(caret)
-library(randomForest)
+library(caret);
+library(randomForest);
 ```
 
 Load raw training data
@@ -12,7 +12,8 @@ Load raw training data
 rawData <- read.csv("pml-training.csv", na.strings=c("NA", "#DIV/0!"), stringsAsFactors = FALSE);
 ```
 
-Leave only variables that contain useful data 
+Leave only variables that contain useful data: actual readings form the
+sensors.
 ```{r}
 usefulVarNames <- c("roll_belt","pitch_belt","yaw_belt","total_accel_belt",
                     "gyros_belt_x","gyros_belt_y","gyros_belt_z",
@@ -40,7 +41,7 @@ Make sure that "classe" is categorical.
 uData$classe = as.factor(uData$classe)
 ```
 
-Split the data into the training and testing sets for the cross validation
+Split the data into the training and testing sets for cross validation.
 ```{r}
 inTrain = createDataPartition(y = uData$classe,p=0.7,list=FALSE);
 training = uData[inTrain,];
@@ -49,15 +50,25 @@ testing = uData[-inTrain,];
 
 Train the model using random forests and data from the training set
 ```{r}
-#modFit <- train(classe ~ ., method = "rf", data=training)
 modFit <- randomForest(classe ~.,data = training);
 ```
 
-Do the cross validation on the testing set
+Use the model to calculate accuracy on the training set
 ```{r}
-predictions <- predict(modFit,newdata = testing);
-confusionMatrix(predictions,testing$classe)
+predictionsTraining <- predict(modFit,data = training);
+confusionMatrix(predictionsTraining,training$classe)
 ```
 
-Cross validation results show that this model performed very well and we expect similiar results on the real data.
+Accuracy an training set is very high. This may be caused by overfitting.
+Do the cross validation on the testing set to se if this is the case.
+
+```{r}
+predictionsTesting <- predict(modFit,newdata = testing);
+confusionMatrix(predictionsTesting,testing$classe)
+```
+
+Cross validation results results are similiar to those in the training set.
+Propably we are not suffering from overfitting. This proves that the method
+that was chosen: randoms forests performs extremelly well for this problem.
+Looking at the cross validation result I expect te out of sample error to be very low.
 

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="x-ua-compatible" content="IE=9" >
 
-<title>Quantative predictions</title>
+<title>Activity quality  predictions</title>
 
 <style type="text/css">
 body, td {
@@ -179,18 +179,18 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<h1>Quantative predictions</h1>
+<h1>Activity quality  predictions</h1>
 
 <p>Load necessary libraries</p>
 
-<pre><code class="r">library(caret)
+<pre><code class="r">library(caret);
 </code></pre>
 
 <pre><code>## Loading required package: lattice
 ## Loading required package: ggplot2
 </code></pre>
 
-<pre><code class="r">library(randomForest)
+<pre><code class="r">library(randomForest);
 </code></pre>
 
 <pre><code>## randomForest 4.6-10
@@ -202,7 +202,8 @@ hljs.initHighlightingOnLoad();
 <pre><code class="r">rawData &lt;- read.csv(&quot;pml-training.csv&quot;, na.strings=c(&quot;NA&quot;, &quot;#DIV/0!&quot;), stringsAsFactors = FALSE);
 </code></pre>
 
-<p>Leave only variables that contain useful data </p>
+<p>Leave only variables that contain useful data: actual readings form the
+sensors.</p>
 
 <pre><code class="r">usefulVarNames &lt;- c(&quot;roll_belt&quot;,&quot;pitch_belt&quot;,&quot;yaw_belt&quot;,&quot;total_accel_belt&quot;,
                     &quot;gyros_belt_x&quot;,&quot;gyros_belt_y&quot;,&quot;gyros_belt_z&quot;,
@@ -230,7 +231,7 @@ uData &lt;-rawData[usefulVarNames];
 <pre><code class="r">uData$classe = as.factor(uData$classe)
 </code></pre>
 
-<p>Split the data into the training and testing sets for the cross validation</p>
+<p>Split the data into the training and testing sets for cross validation.</p>
 
 <pre><code class="r">inTrain = createDataPartition(y = uData$classe,p=0.7,list=FALSE);
 training = uData[inTrain,];
@@ -239,25 +240,64 @@ testing = uData[-inTrain,];
 
 <p>Train the model using random forests and data from the training set</p>
 
-<pre><code class="r">#modFit &lt;- train(classe ~ ., method = &quot;rf&quot;, data=training)
-modFit &lt;- randomForest(classe ~.,data = training);
+<pre><code class="r">modFit &lt;- randomForest(classe ~.,data = training);
 </code></pre>
 
-<p>Do the cross validation on the testing set</p>
+<p>Use the model to calculate accuracy on the training set</p>
 
-<pre><code class="r">predictions &lt;- predict(modFit,newdata = testing);
-confusionMatrix(predictions,testing$classe)
+<pre><code class="r">predictionsTraining &lt;- predict(modFit,data = training);
+confusionMatrix(predictionsTraining,training$classe)
 </code></pre>
 
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1673    9    0    0    0
-##          B    0 1130    5    0    0
-##          C    0    0 1019    7    1
-##          D    0    0    2  956    1
-##          E    1    0    0    1 1080
+##          A 3905   12    0    0    0
+##          B    0 2636   13    0    0
+##          C    0   10 2379   25    1
+##          D    0    0    4 2224    5
+##          E    1    0    0    3 2519
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9946          
+##                  95% CI : (0.9932, 0.9958)
+##     No Information Rate : 0.2843          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.9932          
+##  Mcnemar&#39;s Test P-Value : NA              
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            0.9997   0.9917   0.9929   0.9876   0.9976
+## Specificity            0.9988   0.9988   0.9968   0.9992   0.9996
+## Pos Pred Value         0.9969   0.9951   0.9851   0.9960   0.9984
+## Neg Pred Value         0.9999   0.9980   0.9985   0.9976   0.9995
+## Prevalence             0.2843   0.1935   0.1744   0.1639   0.1838
+## Detection Rate         0.2843   0.1919   0.1732   0.1619   0.1834
+## Detection Prevalence   0.2851   0.1928   0.1758   0.1626   0.1837
+## Balanced Accuracy      0.9993   0.9953   0.9949   0.9934   0.9986
+</code></pre>
+
+<p>Accuracy an training set is very high. This may be caused by overfitting.
+Do the cross validation on the testing set to se if this is the case.</p>
+
+<pre><code class="r">predictionsTesting &lt;- predict(modFit,newdata = testing);
+confusionMatrix(predictionsTesting,testing$classe)
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 1670    7    0    0    0
+##          B    4 1131    4    0    0
+##          C    0    1 1022    7    0
+##          D    0    0    0  956    3
+##          E    0    0    0    1 1079
 ## 
 ## Overall Statistics
 ##                                          
@@ -272,17 +312,20 @@ confusionMatrix(predictions,testing$classe)
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9994   0.9921   0.9932   0.9917   0.9982
-## Specificity            0.9979   0.9989   0.9984   0.9994   0.9996
-## Pos Pred Value         0.9946   0.9956   0.9922   0.9969   0.9982
-## Neg Pred Value         0.9998   0.9981   0.9986   0.9984   0.9996
+## Sensitivity            0.9976   0.9930   0.9961   0.9917   0.9972
+## Specificity            0.9983   0.9983   0.9984   0.9994   0.9998
+## Pos Pred Value         0.9958   0.9930   0.9922   0.9969   0.9991
+## Neg Pred Value         0.9990   0.9983   0.9992   0.9984   0.9994
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2843   0.1920   0.1732   0.1624   0.1835
-## Detection Prevalence   0.2858   0.1929   0.1745   0.1630   0.1839
-## Balanced Accuracy      0.9986   0.9955   0.9958   0.9955   0.9989
+## Detection Rate         0.2838   0.1922   0.1737   0.1624   0.1833
+## Detection Prevalence   0.2850   0.1935   0.1750   0.1630   0.1835
+## Balanced Accuracy      0.9980   0.9956   0.9972   0.9955   0.9985
 </code></pre>
 
-<p>Cross validation results show that this model performed very well and we expect similiar results on the test set.</p>
+<p>Cross validation results results are similiar to those in the training set.
+Propably we are not suffering from overfitting. This proves that the method
+that was chosen: randoms forests performs extremelly well for this problem.
+Looking at the cross validation result I expect te out of sample error to be very low.</p>
 
 </body>
 
