@@ -59,4 +59,5 @@ predictions <- predict(modFit,newdata = testing);
 confusionMatrix(predictions,testing$classe)
 ```
 
+Cross validation results show that this model performed very well and we expect similiar results on the real data.
 

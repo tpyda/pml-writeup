@@ -253,34 +253,36 @@ confusionMatrix(predictions,testing$classe)
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1673   11    0    0    0
-##          B    0 1124    6    0    0
-##          C    0    4 1018   11    1
-##          D    0    0    2  953    2
-##          E    1    0    0    0 1079
+##          A 1673    9    0    0    0
+##          B    0 1130    5    0    0
+##          C    0    0 1019    7    1
+##          D    0    0    2  956    1
+##          E    1    0    0    1 1080
 ## 
 ## Overall Statistics
-##                                           
-##                Accuracy : 0.9935          
-##                  95% CI : (0.9911, 0.9954)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
-##                                           
-##                   Kappa : 0.9918          
-##  Mcnemar&#39;s Test P-Value : NA              
+##                                          
+##                Accuracy : 0.9954         
+##                  95% CI : (0.9933, 0.997)
+##     No Information Rate : 0.2845         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.9942         
+##  Mcnemar&#39;s Test P-Value : NA             
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9994   0.9868   0.9922   0.9886   0.9972
-## Specificity            0.9974   0.9987   0.9967   0.9992   0.9998
-## Pos Pred Value         0.9935   0.9947   0.9845   0.9958   0.9991
-## Neg Pred Value         0.9998   0.9968   0.9984   0.9978   0.9994
+## Sensitivity            0.9994   0.9921   0.9932   0.9917   0.9982
+## Specificity            0.9979   0.9989   0.9984   0.9994   0.9996
+## Pos Pred Value         0.9946   0.9956   0.9922   0.9969   0.9982
+## Neg Pred Value         0.9998   0.9981   0.9986   0.9984   0.9996
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2843   0.1910   0.1730   0.1619   0.1833
-## Detection Prevalence   0.2862   0.1920   0.1757   0.1626   0.1835
-## Balanced Accuracy      0.9984   0.9928   0.9945   0.9939   0.9985
+## Detection Rate         0.2843   0.1920   0.1732   0.1624   0.1835
+## Detection Prevalence   0.2858   0.1929   0.1745   0.1630   0.1839
+## Balanced Accuracy      0.9986   0.9955   0.9958   0.9955   0.9989
 </code></pre>
+
+<p>Cross validation results show that this model performed very well and we expect similiar results on the test set.</p>
 
 </body>
 
